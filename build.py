@@ -146,7 +146,9 @@ def build():
     )
     for show in sorted_incomplete_shows:
         markdown_buffer += f"## {show.name}\n"
-        markdown_buffer += f"- Last Updated `{show.updated_at}`\n"
+        markdown_buffer += (
+            f'- Updated <time datetime="{show.updated_at}">{show.updated_at}</time>\n'
+        )
         # filter for aired episode
         aired_episodes = list(
             filter(lambda ep: ep.air_date <= build_time, show.episodes)
@@ -154,16 +156,23 @@ def build():
         # filter for unreleased episode
         unreleased_aired_episodes = filter(lambda ep: not ep.released, aired_episodes)
         for episode in unreleased_aired_episodes:
-            markdown_buffer += f"- Ep #{episode.number}\n"
-            markdown_buffer += f"- Aired `{episode.air_date}`\n"
+            markdown_buffer += f"- Episode {episode.number}\n"
+            markdown_buffer += f'- Aired <time datetime="{episode.air_date}">{episode.air_date}</time>\n'
             unfinished_staff = list(filter(lambda stf: not stf.finished, episode.staff))
             unfinished_staff_acronyms = list(
                 map(lambda stf: stf.position.acronym, unfinished_staff)
             )
-            markdown_buffer += f"- {','.join(unfinished_staff_acronyms)}\n"
+            markdown_buffer += f"- @ `{'`, `'.join(unfinished_staff_acronyms)}`\n"
             markdown_buffer += "\n"
             break
-    html = "<!doctype html>\n<html>\n<body>\n"
+    html = '<!doctype html>\n<html lang="en">\n'
+    html += '<head>\n<meta charset="utf-8">\n'
+    html += '<link media="all" rel="stylesheet" href="style.css" />'
+    html += "</head>\n"
+    html += (
+        '<script defer="defer" type="application/javascript" src="script.js"></script>'
+    )
+    html += "<body>"
     html += markdown(markdown_buffer)
     html += "\n</body>\n</html>\n"
     print(html)
