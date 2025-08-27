@@ -134,7 +134,7 @@ def build():
     token: str = environ["DESCHTIMES_TOKEN"]
     build_time = datetime.now(tz=timezone.utc)
     endpoint = f"https://deschtimes.com/api/v1/groups/{token}.json"
-    response = get(endpoint)
+    response = get(endpoint, timeout=30.0) # the endpoint is really slow lol
     group = Group(**loads(response.text))
     markdown_buffer = ""
     markdown_buffer += f"# {group.name}\n"
